@@ -81,7 +81,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/clear")
+    @GetMapping("/user/list")
     public Map<String, Object> list() {
         try {
             String API_KEY = "2a9a8881-5573-419a-8d7b-c6a7e8821e9e";
