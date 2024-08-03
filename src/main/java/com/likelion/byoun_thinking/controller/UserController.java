@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -35,7 +37,7 @@ public class UserController {
         try {
             String API_KEY = "2a9a8881-5573-419a-8d7b-c6a7e8821e9e";
             boolean univ_check = true;
-
+            log.info("들어온 대학교 : " + universityName);
             // UnivCert.certify()의 결과에서 필요한 데이터를 추출
             Map<String, Object> result = UnivCert.certify(API_KEY, email, universityName, univ_check);
             boolean success = (boolean) result.get("success");
@@ -55,6 +57,36 @@ public class UserController {
             String API_KEY = "2a9a8881-5573-419a-8d7b-c6a7e8821e9e";
 
             Map<String, Object> result = UnivCert.certifyCode(API_KEY, email, universityName, code);
+            boolean success = (boolean) result.get("success");
+
+            return Map.of("success", success);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Map.of("success", false, "message", "error");
+        }
+    }
+
+    @GetMapping("/user/clear")
+    public Map<String, Object> clear() {
+        try {
+            String API_KEY = "2a9a8881-5573-419a-8d7b-c6a7e8821e9e";
+
+            Map<String, Object> result = UnivCert.clear(API_KEY);
+            boolean success = (boolean) result.get("success");
+
+            return Map.of("success", success);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Map.of("success", false, "message", "error");
+        }
+    }
+
+    @GetMapping("/user/clear")
+    public Map<String, Object> list() {
+        try {
+            String API_KEY = "2a9a8881-5573-419a-8d7b-c6a7e8821e9e";
+
+            Map<String, Object> result = UnivCert.list(API_KEY);
             boolean success = (boolean) result.get("success");
 
             return Map.of("success", success);
