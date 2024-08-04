@@ -57,7 +57,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Integer> {
             "WHERE u.userId = :userId " +
             "GROUP BY c.challengeId, c.title, c.description " +
             "ORDER BY c.participants DESC")
-    List<ChallengeInfoDTO> findMySchoolChallengeInfo(@Param("userId ") Integer userId);
+    List<ChallengeInfoDTO> findMySchoolChallengeInfo(@Param("userId") Integer userId);
 
     @Query("SELECT new com.likelion.byoun_thinking.dto.ChallengeInfoDTO(c.challengeId, c.title, c.description, COUNT(cm.commentId)) " +
             "FROM Challenge c " +
@@ -66,7 +66,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Integer> {
             "WHERE u.userId = :userId AND c.school.schoolId = 1 " +
             "GROUP BY c.challengeId, c.title, c.description " +
             "ORDER BY c.participants DESC")
-    List<ChallengeInfoDTO> findMyAllChallengeInfo(@Param("userId ") Integer userId);
+    List<ChallengeInfoDTO> findMyAllChallengeInfo(@Param("userId") Integer userId);
 
 //    @Query("SELECT c FROM Challenge c WHERE (c.schoolId = 0 OR c.schoolId = :schoolId) " +
 //            "AND (c.title LIKE %:keyword% OR c.description LIKE %:keyword%) " +

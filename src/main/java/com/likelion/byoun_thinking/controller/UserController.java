@@ -194,6 +194,7 @@ public class UserController {
         
         List<UserInfoDTO> collect = userInfo.stream()
                 .map(user -> new UserInfoDTO(
+                        userId,
                         user.getName(),
                         user.getEmail(),
                         user.getSchoolName(),
