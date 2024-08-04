@@ -149,6 +149,7 @@ public class UserController {
         session.setAttribute("userId", user.getUserId()); // 세션에 userId 등록
         session.setMaxInactiveInterval(1800); // 세션 기한 30분 설정
         messageDTO.setMessage("로그인 성공");
+        messageDTO.setSessionId(session.getId());
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 

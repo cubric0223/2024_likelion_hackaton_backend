@@ -9,4 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MessageDTO {
     private String message;
+    private String sessionId;
+
+    public MessageDTO(String message){
+        this.message = message;
+    }
 }
