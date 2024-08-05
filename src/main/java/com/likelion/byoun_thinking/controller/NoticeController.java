@@ -30,7 +30,8 @@ public class NoticeController {
                 notice -> new NoticeListDTO(
                         notice.getNoticeId(),
                         notice.getTitle(),
-                        notice.getImportant()
+                        notice.getImportant(),
+                        notice.getModifiedAt()
                 )).collect(Collectors.toList());
         Map<String, List<NoticeListDTO>> response = new HashMap<>();
         response.put("notices", collect);
@@ -46,7 +47,8 @@ public class NoticeController {
                         notice.getNoticeId(),
                         notice.getTitle(),
                         notice.getContent(),
-                        notice.getImportant()
+                        notice.getImportant(),
+                        notice.getModifiedAt()
                 )).collect(Collectors.toList());
         Map<String, List<NoticeInfoDTO>> response = new HashMap<>();
         response.put("notices", collect);

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,4 +15,5 @@ public class NoticeListDTO {
     private Integer noticeId;
     private String title;
     private Boolean important;
+    private Date modifiedAt;
 }

@@ -14,11 +14,11 @@ import java.util.List;
 
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Integer> {
-    @Query("SELECT new com.likelion.byoun_thinking.dto.NoticeListDTO(n.noticeId, n.title, n.important) " +
+    @Query("SELECT new com.likelion.byoun_thinking.dto.NoticeListDTO(n.noticeId, n.title, n.important, n.modifiedAt) " +
             "FROM Notice n ORDER BY n.important DESC, n.modifiedAt DESC")
     List<NoticeListDTO> findAllSortedByImportant();
 
-    @Query("SELECT new com.likelion.byoun_thinking.dto.NoticeInfoDTO(n.noticeId, n.title, n.content, n.important) " +
+    @Query("SELECT new com.likelion.byoun_thinking.dto.NoticeInfoDTO(n.noticeId, n.title, n.content, n.important, n.modifiedAt) " +
             "FROM Notice n WHERE n.noticeId = :noticeId")
     List<NoticeInfoDTO> findNoticeByNoticeId(@Param("noticeId") Integer noticeId);
 

@@ -5,7 +5,9 @@ import com.likelion.byoun_thinking.dto.*;
 import com.likelion.byoun_thinking.entity.User;
 import com.likelion.byoun_thinking.service.ChallengeService;
 import com.likelion.byoun_thinking.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class UserController {
 
     private final UserService userService;
     private final ChallengeService challengeService;
+    private final HttpServletResponse response;
 
     // 이메일 인증 번호 발송
     @GetMapping("/user/emailAuthReq")
@@ -126,34 +129,53 @@ public class UserController {
     }
 
     @PostMapping("/user/login")
-    public ResponseEntity<MessageDTO> login(@Valid @RequestBody UserLoginRequestDTO request, HttpServletRequest httpServletRequest, BindingResult bindingResult) {
-        MessageDTO messageDTO = new MessageDTO();
+         public ResponseEntity<MessageDTO> login(@Valid @RequestBody UserLoginRequestDTO request, HttpServletRequest httpServletRequest, BindingResult bindingResult) {
+             MessageDTO messageDTO = new MessageDTO();
 
-        if (bindingResult.hasErrors()) { // 입력받은 request body 값에 정상적인 값들이 들어있는지 확인
-            List<FieldError> list = bindingResult.getFieldErrors();
-            for (FieldError error : list) {
-                messageDTO.setMessage(error.getDefaultMessage());
-                return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
-            }
-        }
+             if (bindingResult.hasErrors()) { // 입력받은 request body 값에 정상적인 값들이 들어있는지 확인
+                 List<FieldError> list = bindingResult.getFieldErrors();
+                 for (FieldError error : list) {
+                     messageDTO.setMessage(error.getDefaultMessage());
+                     return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
+                 }
+             }
 
-        User user = userService.login(request); // 로그인 성공시 User 객체 리턴 or 실패시 null 리턴
+             User user = userService.login(request); // 로그인 성공시 User 객체 리턴 or 실패시 null 리턴
 
-        if (user == null) {
-            messageDTO.setMessage("로그인 실패");
-            return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
-        }
+             if (user == null) {
+                 messageDTO.setMessage("로그인 실패");
+                 return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
+             }
 
-        httpServletRequest.getSession().invalidate(); // 기존 세션 무효화
-        HttpSession session = httpServletRequest.getSession(true); // 세션을 있으면 가져오고 없으면 생성해서 리턴
-        session.setAttribute("userId", user.getUserId()); // 세션에 userId 등록
-        session.setMaxInactiveInterval(1800); // 세션 기한 30분 설정
-        messageDTO.setMessage("로그인 성공");
-        messageDTO.setSessionId(session.getId());
-        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
-    }
+             httpServletRequest.getSession().invalidate(); // 기존 세션 무효화
+             HttpSession session = httpServletRequest.getSession(true); // 세션을 있으면 가져오고 없으면 생성해서 리턴
+             session.setAttribute("userId", user.getUserId()); // 세션에 userId 등록
+             session.setMaxInactiveInterval(1800); // 세션 기한 30분 설정
+             messageDTO.setMessage("로그인 성공");
+             messageDTO.setSessionId(session.getId());
 
-    @PostMapping("/user/logout")
+             // Create a new cookie with name "JSESSIONID" and value of sessionId
+             Cookie cookie = new Cookie("JSESSIONID", session.getId());
+
+             // Set the domain for the cookie
+             cookie.setDomain("beancp.com");
+
+             // Set the path for the cookie
+             cookie.setPath("/");
+
+             // Set the HttpOnly flag to true to prevent client-side script access
+             cookie.setHttpOnly(true);
+
+             // Optionally, set the cookie's max age (in seconds)
+             // cookie.setMaxAge(3600); // 1 hour
+
+             // Add the cookie to the response
+             response.addCookie(cookie);
+
+             return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+         }
+
+    @GetMapping("/user/logout")
     public ResponseEntity<MessageDTO> logout(HttpServletRequest httpServletRequest) {
         MessageDTO messageDTO = new MessageDTO();
         HttpSession session = httpServletRequest.getSession(false);
