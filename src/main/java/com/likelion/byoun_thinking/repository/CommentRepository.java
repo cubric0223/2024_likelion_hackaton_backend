@@ -34,6 +34,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             "left join School s on s.schoolId = u.school.schoolId " +
             "left join Challenge ch on ch.challengeId = c.challenge.challengeId " +
             "left join MonthlyChallenge mc on mc.challenge.challengeId = ch.challengeId " +
+            "where s.schoolId <> 1 " +
             "group by s.schoolId " +
             "order by COUNT(c) desc")
     List<SchoolRankingDTO> getMonthlyChallengeSchoolTotalRanking();

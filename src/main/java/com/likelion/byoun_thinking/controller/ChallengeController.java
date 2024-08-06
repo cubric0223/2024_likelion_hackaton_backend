@@ -3,15 +3,11 @@ package com.likelion.byoun_thinking.controller;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.likelion.byoun_thinking.dto.*;
-import com.likelion.byoun_thinking.entity.Challenge;
-import com.likelion.byoun_thinking.entity.Comment;
 import com.likelion.byoun_thinking.service.ChallengeService;
-import com.likelion.byoun_thinking.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -74,12 +68,7 @@ public class ChallengeController {
         }
 
         final String userId = session.getAttribute("userId").toString();
-        boolean isCreated = challengeService.joinChallenge(chal_id,Integer.parseInt(userId));
-
-        if(!isCreated){
-            messageDTO.setMessage("참여 신청 실패");
-            return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
-        }
+        challengeService.joinChallenge(chal_id,Integer.parseInt(userId));
 
         messageDTO.setMessage("참여 신청 성공");
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
@@ -112,6 +101,9 @@ public class ChallengeController {
         }
 
         Integer userId = Integer.parseInt(session.getAttribute("userId").toString());
+
+        challengeService.joinChallenge(chal_id,userId);
+
         String fileUrl;
         try{
             String fileName = image_file.getOriginalFilename();
@@ -167,5 +159,4 @@ public class ChallengeController {
         messageDTO.setMessage("인증 성공");
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
-
 }

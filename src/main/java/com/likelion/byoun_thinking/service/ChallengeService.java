@@ -58,7 +58,7 @@ public class ChallengeService {
 
     // 챌린지 참여 함수
     @Transactional
-    public boolean joinChallenge(Integer chal_id, Integer user_id) {
+    public void joinChallenge(Integer chal_id, Integer user_id) {
         User user = userRepository.findById(user_id).orElseThrow(
                 () -> new IllegalArgumentException("not found: " + user_id)
         );
@@ -67,11 +67,11 @@ public class ChallengeService {
         );
 
         if(checkJoined(user, challenge)){ // 이미 참여했는지 확인
-            return false;
+            return;
         }
 
         if(!checkChallengeAndSchool(challenge, user)){ // 챌린지의 학교 정보와 학생의 학교 정보를 확인
-            return false;
+            return;
         }
 
         userChallengeRepository.save(UserChallenge.builder()
@@ -83,7 +83,7 @@ public class ChallengeService {
         challenge.setParticipants(challenge.getParticipants()+1);
         challengeRepository.save(challenge);
 
-        return true;
+        return;
     }
 
     // 챌린지 상세 조회 함수

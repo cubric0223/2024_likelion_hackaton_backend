@@ -1,5 +1,6 @@
 package com.likelion.byoun_thinking.service;
 
+import com.likelion.byoun_thinking.dto.MonthlyChalDTO;
 import com.likelion.byoun_thinking.dto.MonthlyChalRankingResponseDTO;
 import com.likelion.byoun_thinking.dto.MonthlyChallengeResponseDTO;
 import com.likelion.byoun_thinking.dto.SchoolRankingDTO;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -74,10 +76,27 @@ public class MonthlyChallengeService {
             Challenge challenge = monthlyChallenges.get(i).getChallenge();
             Date ch_start = challenge.getChStart();
             Date ch_end = challenge.getChEnd();
-            if(ch_start.before(today) && ch_end.after(today)){
+            Integer schoolId = challenge.getSchool().getSchoolId();
+            if(ch_start.before(today) && ch_end.after(today) && schoolId != 1){
                 return monthlyChallenges.get(i);
             }
         }
         return null;
+    }
+
+    // 이달의 대항전 역사 조회 함수
+    public List<MonthlyChalDTO> getMonthlyChalHistory(){
+        List<MonthlyChallenge> monthlyChallenges = monthlyChallengeRepository.findAll();
+
+        if(monthlyChallenges.isEmpty()){
+            return null;
+        }
+
+        List<MonthlyChalDTO> monthlyChalList = new ArrayList<>();
+        for(MonthlyChallenge mc : monthlyChallenges){
+            MonthlyChalDTO mcDto = new MonthlyChalDTO(mc.getChallenge().getTitle());
+            monthlyChalList.add(mcDto);
+        }
+        return monthlyChalList;
     }
 }

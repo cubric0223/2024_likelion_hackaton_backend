@@ -1,11 +1,11 @@
 package com.likelion.byoun_thinking.controller;
 
-import com.likelion.byoun_thinking.dto.MessageDTO;
-import com.likelion.byoun_thinking.dto.MonthlyChalRankingResponseDTO;
-import com.likelion.byoun_thinking.dto.MonthlyChallengeResponseDTO;
-import com.likelion.byoun_thinking.dto.SchoolRankingDTO;
+import com.likelion.byoun_thinking.dto.*;
 import com.likelion.byoun_thinking.service.MonthlyChallengeService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.protocol.HTTP;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,5 +58,15 @@ public class MonthlyChallengeController {
         }
         result.put("rank", responseDTO.getRank());
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/chal/monthly/history")
+    public ResponseEntity<Map<String, Object>> getMonthlyChalHistory(){
+        Map<String, Object> result = new HashMap<>();
+
+        List<MonthlyChalDTO> history = monthlyChallengeService.getMonthlyChalHistory();
+
+        result.put("history", history);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
