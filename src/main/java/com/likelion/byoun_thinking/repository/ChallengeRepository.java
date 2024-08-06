@@ -1,6 +1,7 @@
 package com.likelion.byoun_thinking.repository;
 
 import com.likelion.byoun_thinking.dto.ChallengeInfoDTO;
+import com.likelion.byoun_thinking.dto.ChallengeMainInfoDTO;
 import com.likelion.byoun_thinking.entity.Challenge;
 import com.likelion.byoun_thinking.entity.School;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,10 +15,12 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Integer> {
             "LIKE %:keyword% OR c.description LIKE %:keyword%")
     List<Challenge> findByKeyword(@Param("keyword") String keyword);
 
-    @Query("SELECT c FROM Challenge c " +
+    @Query("SELECT new com.likelion.byoun_thinking.dto.ChallengeMainInfoDTO(c.challengeId, c.title, c.description, c.participants) " +
+            "FROM Challenge c " +
             "JOIN User u ON c.school = u.school " +
-            "WHERE u.userId = :userId")
-    List<Challenge> findByUserId(@Param("userId") int userId);
+            "WHERE u.userId = :userId " +
+            "GROUP BY c.challengeId, c.title, c.description, c.participants")
+    List<ChallengeMainInfoDTO> findByUserId(@Param("userId") int userId);
 
     @Query("SELECT c FROM Challenge c WHERE c.school.schoolId = :schoolId " +
             "ORDER BY c.participants DESC")

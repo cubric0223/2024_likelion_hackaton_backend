@@ -33,7 +33,7 @@ public class ChallengeService {
     }
 
     // 학교 Id로 챌린지 찾는 함수 => 전체 챌린지 교내 챌린지 둘 다 가능
-    public List<Challenge> getChallenges(Integer userId) {
+    public List<ChallengeMainInfoDTO> getChallenges(Integer userId) {
         return challengeRepository.findByUserId(userId);
     }
 

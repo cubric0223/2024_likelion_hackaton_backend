@@ -51,7 +51,7 @@ public class Challenge {
 
     @Column(name = "participants", nullable = false)
     @ColumnDefault("0")
-    private Integer participants;
+    private Integer participants = 0;
 
     @Column(name = "ch_Start", nullable = false)
     private Date chStart;

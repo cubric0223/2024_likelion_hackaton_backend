@@ -1,5 +1,6 @@
 package com.likelion.byoun_thinking.controller;
 
+import com.likelion.byoun_thinking.dto.ChallengeMainInfoDTO;
 import com.likelion.byoun_thinking.dto.ChallengeSearchDTO;
 import com.likelion.byoun_thinking.dto.SchoolNameTrendDTO;
 import com.likelion.byoun_thinking.entity.Challenge;
@@ -50,23 +51,48 @@ public class MainController {
     }
 
     @GetMapping("/main/schoolChal")
-    public Map<String, List<ChallengeSearchDTO>> getSchoolChallenges(HttpServletRequest httpServletRequest) {
+    public Map<String, List<ChallengeMainInfoDTO>> getSchoolChallenges(HttpServletRequest httpServletRequest) {
         // 가져온 세션에서 userId 없으면 에러
         HttpSession session = httpServletRequest.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not login or session expired :  getSchoolChallenges method");
         }
         Integer userId = (Integer) session.getAttribute("userId");
-        List<Challenge> challenges = challengeService.getChallenges(userId);
+        List<ChallengeMainInfoDTO> challenges = challengeService.getChallenges(userId);
 
-        return getStringListMap(challenges);
+        List<ChallengeMainInfoDTO> challengeMainInfoDTO = challenges.stream()
+                .map(challenge -> new ChallengeMainInfoDTO(
+                        challenge.getId(),
+                        challenge.getTitle(),
+                        challenge.getDescription(),
+                        challenge.getParticipants()))
+                .collect(Collectors.toList());
+
+        // Map 생성 및 데이터 삽입
+        Map<String, List<ChallengeMainInfoDTO>> response = new HashMap<>();
+        response.put("results", challengeMainInfoDTO);
+
+        return response;
     }
 
     @GetMapping("/main/allChal")
-    public Map<String, List<ChallengeSearchDTO>> getSchoolChallenges() {
+    public Map<String, List<ChallengeMainInfoDTO>> getSchoolChallenges() {
         // 전체 챌린지 중에서 userId == 1 관리자
-        List<Challenge> challenges = challengeService.getChallenges(1);
-        return getStringListMap(challenges);
+        List<ChallengeMainInfoDTO> challenges = challengeService.getChallenges(1);
+
+        List<ChallengeMainInfoDTO> challengeMainInfoDTO = challenges.stream()
+                .map(challenge -> new ChallengeMainInfoDTO(
+                        challenge.getId(),
+                        challenge.getTitle(),
+                        challenge.getDescription(),
+                        challenge.getParticipants()))
+                .collect(Collectors.toList());
+
+        // Map 생성 및 데이터 삽입
+        Map<String, List<ChallengeMainInfoDTO>> response = new HashMap<>();
+        response.put("results", challengeMainInfoDTO);
+
+        return response;
     }
 
     // 참여중인 교내 챌린지

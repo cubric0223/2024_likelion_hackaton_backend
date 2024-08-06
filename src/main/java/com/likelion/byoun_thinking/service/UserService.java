@@ -7,6 +7,7 @@ import com.likelion.byoun_thinking.dto.UserSignUpRequestDTO;
 import com.likelion.byoun_thinking.repository.SchoolRepository;
 import com.likelion.byoun_thinking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,7 @@ public class UserService {
     public void signUp(UserSignUpRequestDTO request) throws IllegalArgumentException {
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(hashingPassword(request.getPassword()));
         user.setName(request.getName());
         user.setSchool(schoolRepository.findByName(request.getSchool())
                 .orElseThrow(()-> new IllegalArgumentException("school doesn't exits"))
@@ -48,11 +49,11 @@ public class UserService {
 
         User user = optionalUser.get();
 
-        if(!user.getPassword().equals(request.getPassword())){
+        if(BCrypt.checkpw(request.getPassword(),user.getPassword())){ // DB 비밀번호와 입력받은 비밀번호 확인
+            return user;
+        }else{
             return null;
         }
-
-        return user;
     }
 
     // fileUrl 업로드 함수
@@ -65,5 +66,10 @@ public class UserService {
     // userInfo 조회
     public List<UserInfoDTO> getUserInfo(Integer userId) {
         return userRepository.getUserInfoByUserId(userId);
+    }
+
+    // 비밀번호 해싱화
+    public String hashingPassword(String password){
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 }
